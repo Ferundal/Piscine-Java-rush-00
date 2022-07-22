@@ -1,3 +1,5 @@
+package edu.school42;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -6,44 +8,44 @@ public class Cell {
     private int horisonalPosition;
     private int verticalPosition;
     private static ArrayList<Cell> exploredCells;
-    Map map;
+    Pathfinder pathfinder;
     static {
         exploredCells = new ArrayList<Cell>();
     }
-    private Cell (int horisonalPosition, int verticalPosition, Map map) {
+    private Cell (int horisonalPosition, int verticalPosition, Pathfinder pathfinder) {
         this.horisonalPosition = horisonalPosition;
         this.verticalPosition = verticalPosition;
-        this.map = map;
+        this.pathfinder = pathfinder;
     }
-    public Cell (Map map) {
+    public Cell (Pathfinder pathfinder) {
         horisonalPosition = 0;
         verticalPosition = 0;
     }
     public Cell exploreUp() {
         if (!isCellExist(this.horisonalPosition, this.verticalPosition + 1)
-                && map.moveUp()) {
-            return new Cell(this.horisonalPosition, this.verticalPosition + 1, this.map);
+                && pathfinder.moveUp()) {
+            return new Cell(this.horisonalPosition, this.verticalPosition + 1, this.pathfinder);
         }
         return null;
     }
     public Cell exploreDown() {
         if (!isCellExist(this.horisonalPosition, this.verticalPosition + 1)
-                && map.moveDown()) {
-            return new Cell(this.horisonalPosition, this.verticalPosition + 1, this.map);
+                && pathfinder.moveDown()) {
+            return new Cell(this.horisonalPosition, this.verticalPosition + 1, this.pathfinder);
         }
         return null;
     }
     public Cell exploreRight() {
         if (!isCellExist(this.horisonalPosition, this.verticalPosition + 1)
-                && map.moveRight()) {
-            return new Cell(this.horisonalPosition, this.verticalPosition + 1, this.map);
+                && pathfinder.moveRight()) {
+            return new Cell(this.horisonalPosition, this.verticalPosition + 1, this.pathfinder);
         }
         return null;
     }
     public Cell exploreLeft() {
         if (!isCellExist(this.horisonalPosition, this.verticalPosition + 1)
-                && map.moveLeft()) {
-            return new Cell(this.horisonalPosition, this.verticalPosition + 1, this.map);
+                && pathfinder.moveLeft()) {
+            return new Cell(this.horisonalPosition, this.verticalPosition + 1, this.pathfinder);
         }
         return null;
     }
@@ -61,27 +63,27 @@ public class Cell {
         if (this.horisonalPosition == cell.horisonalPosition) {
             int verticalDifference = cell.verticalPosition - this.verticalPosition;
             if (verticalDifference > 1) {
-                while (map.moveUp() && verticalDifference > 1) {
+                while (pathfinder.moveUp() && verticalDifference > 1) {
                     resultPath.add(new Cell(cell.horisonalPosition,
                             cell.verticalPosition - (verticalDifference - 1),
-                            this.map));
+                            this.pathfinder));
                     --verticalDifference;
                 }
                 for (int counter = 0; counter < resultPath.size(); ++counter) {
-                    map.moveDown();
+                    pathfinder.moveDown();
                 }
                 if (verticalDifference == 1) {
                     return resultPath;
                 }
             } else if (verticalDifference < -1) {
-                while (map.moveDown() && verticalDifference < -1) {
+                while (pathfinder.moveDown() && verticalDifference < -1) {
                     resultPath.add(new Cell(cell.horisonalPosition,
                             cell.verticalPosition - (verticalDifference + 1),
-                            this.map));
+                            this.pathfinder));
                     ++verticalDifference;
                 }
                 for (int counter = 0; counter < resultPath.size(); ++counter) {
-                    map.moveUp();
+                    pathfinder.moveUp();
                 }
                 if (verticalDifference == -1) {
                     return resultPath;
@@ -90,27 +92,27 @@ public class Cell {
         } else if (this.verticalPosition == cell.verticalPosition) {
             int horisontalDifference = cell.horisonalPosition - this.horisonalPosition;
             if (horisontalDifference > 1) {
-                while (map.moveRight() && horisontalDifference > 1) {
+                while (pathfinder.moveRight() && horisontalDifference > 1) {
                     resultPath.add(new Cell(cell.verticalPosition,
                             cell.horisonalPosition - (horisontalDifference - 1),
-                            this.map));
+                            this.pathfinder));
                     --horisontalDifference;
                 }
                 for (int counter = 0; counter < resultPath.size(); ++counter) {
-                    map.moveLeft();
+                    pathfinder.moveLeft();
                 }
                 if (horisontalDifference == 1) {
                     return resultPath;
                 }
             } else if (horisontalDifference < -1) {
-                while (map.moveLeft() && horisontalDifference < -1) {
+                while (pathfinder.moveLeft() && horisontalDifference < -1) {
                     resultPath.add(new Cell(cell.horisonalPosition,
                             cell.verticalPosition - (horisontalDifference + 1),
-                            this.map));
+                            this.pathfinder));
                     ++horisontalDifference;
                 }
                 for (int counter = 0; counter < resultPath.size(); ++counter) {
-                    map.moveRight();
+                    pathfinder.moveRight();
                 }
                 if (horisontalDifference == -1) {
                     return resultPath;

@@ -1,4 +1,6 @@
-public interface Map {
+package edu.school42;
+
+public interface Pathfinder {
     boolean moveUp();
     boolean moveDown();
     boolean moveLeft();

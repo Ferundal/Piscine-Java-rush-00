@@ -1,3 +1,5 @@
+package edu.school42;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
@@ -21,12 +23,20 @@ public class Game {
         game.run();
     }
     private void run() throws IllegalParametersException {
-        Object player = new Object();
-        Object enemy = new Object();
-        Object target = new Object();
-        Object wall = new Object();
-        GameMap gameMap = new GameMap(size);
-        gameMap.paintMap();
+        ApplicationProperties applicationProperties = ApplicationProperties.loadFromFile("Game/resources/application-production.properties");
+        Map map = Map.GenerateMap(size, enemiesCount, wallsCount, applicationProperties);
+        try {
+            if (profile.equals("dev")) {
+                while (true) {
+                    map.DevUpdate();
+                }
+            } else {
+                while (true) {
+                    map.Update();
+                }
+            }
+        } catch (GameOverException gameOverException) {
+            System.out.println(gameOverException.toString());
+        }
     }
-
 }
