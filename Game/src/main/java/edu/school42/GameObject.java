@@ -1,7 +1,6 @@
 package edu.school42;
 
 import com.diogonunes.jcolor.Attribute;
-
 import static com.diogonunes.jcolor.Ansi.colorize;
 import static com.diogonunes.jcolor.Attribute.*;
 

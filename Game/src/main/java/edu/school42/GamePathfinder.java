@@ -2,6 +2,7 @@ package edu.school42;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class GamePathfinder implements Pathfinder {
     private Map map;
@@ -15,7 +16,7 @@ public class GamePathfinder implements Pathfinder {
     }
 
     private GamePathfinder() {}
-    public GamePathfinder(Map map, MovableObject movableObject,GameObject target) {
+    public GamePathfinder(Map map, MovableObject movableObject, GameObject target) {
         this.map = map;
         this.xPosition = movableObject.xPosition;
         this.yPosition = movableObject.yPosition;

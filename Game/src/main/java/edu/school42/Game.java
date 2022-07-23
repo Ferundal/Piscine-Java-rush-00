@@ -23,17 +23,12 @@ public class Game {
         game.run();
     }
     private void run() throws IllegalParametersException {
-        ApplicationProperties applicationProperties = ApplicationProperties.loadFromFile("Game/resources/application-production.properties");
+        ApplicationProperties applicationProperties = ApplicationProperties.loadFromFile(profile);
         Map map = Map.GenerateMap(size, enemiesCount, wallsCount, applicationProperties);
+        map.paintMap();
         try {
-            if (profile.equals("dev")) {
-                while (true) {
-                    map.DevUpdate();
-                }
-            } else {
-                while (true) {
-                    map.Update();
-                }
+            while (true) {
+                map.Update();
             }
         } catch (GameOverException gameOverException) {
             System.out.println(gameOverException.toString());

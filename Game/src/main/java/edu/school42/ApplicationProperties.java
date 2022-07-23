@@ -2,9 +2,10 @@ package edu.school42;
 
 import com.diogonunes.jcolor.Attribute;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.awt.*;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class ApplicationProperties {
     public boolean isDevMode;
@@ -24,30 +25,31 @@ public class ApplicationProperties {
     private ApplicationProperties() {}
 
     public static ApplicationProperties loadFromFile(String profile) throws IllegalParametersException {
-        String filePath = "Game/resources/application-production.properties";
-        FileReader applicationPropertiesFileReader;
-
-        try {
-            applicationPropertiesFileReader = new FileReader(filePath);
-        }
-        catch (java.io.FileNotFoundException fileNotFoundException) {
-            throw new IllegalParametersException();
-        }
-        BufferedReader applicationPropertiesBufferedReader = new BufferedReader(applicationPropertiesFileReader);
-        ApplicationProperties applicationProperties = new ApplicationProperties();
+        boolean isDevMode = false;
         if (profile.equals("dev")) {
-            applicationProperties.isDevMode = true;
+            System.out.println("Developer mode is on.");
+            isDevMode = true;
         }
-        applicationProperties.enemyChar = parseChar("enemy.char", applicationPropertiesBufferedReader);
-        applicationProperties.playerChar = parseChar("player.char", applicationPropertiesBufferedReader);
-        applicationProperties.wallChar = parseChar("wall.char", applicationPropertiesBufferedReader);
-        applicationProperties.goalChar = parseChar("goal.char", applicationPropertiesBufferedReader);
-        applicationProperties.emptyChar = parseChar("empty.char", applicationPropertiesBufferedReader);
-        applicationProperties.enemyColor = parseColor("enemy.color", applicationPropertiesBufferedReader);
-        applicationProperties.playerColor = parseColor("player.color", applicationPropertiesBufferedReader);
-        applicationProperties.wallColor = parseColor("wall.color", applicationPropertiesBufferedReader);
-        applicationProperties.goalColor = parseColor("goal.color", applicationPropertiesBufferedReader);
-        applicationProperties.emptyColor = parseColor("empty.color", applicationPropertiesBufferedReader);
+        String fileName = "application-" + profile + ".properties";
+        InputStream in;
+        BufferedReader reader;
+        in = ApplicationProperties.class.getResourceAsStream("/" + fileName);
+        reader = new BufferedReader(new InputStreamReader(in));
+        ApplicationProperties applicationProperties = new ApplicationProperties();
+        applicationProperties.isDevMode = isDevMode;
+        applicationProperties.enemyChar = parseChar("enemy.char", reader);
+        applicationProperties.playerChar = parseChar("player.char", reader);
+        applicationProperties.wallChar = parseChar("wall.char", reader);
+        applicationProperties.goalChar = parseChar("goal.char", reader);
+        applicationProperties.emptyChar = parseChar("empty.char", reader);
+        applicationProperties.enemyColor = parseColor("enemy.color", reader);
+        applicationProperties.playerColor = parseColor("player.color", reader);
+        applicationProperties.wallColor = parseColor("wall.color", reader);
+        applicationProperties.goalColor = parseColor("goal.color", reader);
+        applicationProperties.emptyColor = parseColor("empty.color", reader);
+        if (isDevMode) {
+            System.out.println("Application Properties loaded from " + fileName +".");
+        }
         return applicationProperties;
     }
     private static String parseChar(String propertyName, BufferedReader bufferedReader) throws IllegalParametersException {

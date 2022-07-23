@@ -9,7 +9,7 @@ public class Player extends MovableObject {
         super(playerSymbol, color, map, target);
     }
     @Override
-    public void Update() throws GameOverException {
+    public boolean Update() throws GameOverException {
         Path path = Path.newInstance(this.getPathfinder());
         if (path.getMoveDirection() == Direction.STAY) {
             throw new GameOverException("You lose");
@@ -17,18 +17,39 @@ public class Player extends MovableObject {
         Scanner console = new Scanner(System.in);
         while (true) {
             String nextLine = console.nextLine();
-            if (nextLine.length() > 0) {
-                switch (nextLine.charAt(0)) {
-                    case 'w':
-                        return;
-                    case 's':
-                        return;
-                    case 'a':
-                        return;
-                    case 'd':
-                        return;
+            if (nextLine.length() > 0 && Move(nextLine.charAt(0))) {
+                    return true;
                 }
             }
         }
+
+    private boolean Move(char moveDirection) {
+        switch (moveDirection) {
+            case 'w':
+                if (this.getPathfinder().moveUp()) {
+                    --this.yPosition;
+                    return true;
+                }
+                break;
+            case 's':
+                if (this.getPathfinder().moveDown()) {
+                    ++this.yPosition;
+                    return true;
+                }
+                break;
+            case 'a':
+                if (this.getPathfinder().moveLeft()) {
+                    --this.xPosition;
+                    return true;
+                }
+                break;
+            case 'd':
+                if (this.getPathfinder().moveRight()) {
+                    ++this.xPosition;
+                    return true;
+                }
+                break;
+        }
+        return false;
     }
 }

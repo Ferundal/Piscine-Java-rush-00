@@ -10,8 +10,9 @@ import static com.diogonunes.jcolor.Ansi.colorize;
 import static com.diogonunes.jcolor.Attribute.BLACK_TEXT;
 
 public class Map {
+    ApplicationProperties applicationProperties;
     int objectsCounter = 0;
-    private GameObject[][] infoStore;
+    private GameObject [][] infoStore;
     private String emptyChar;
     private Attribute emptyColor;
     private GameObject wall;
@@ -24,7 +25,8 @@ public class Map {
     }
     private Map() {}
     private Map(int size, ApplicationProperties appProperties) {
-        this.infoStore = new GameObject[size][size];
+        this.applicationProperties = appProperties;
+        this.infoStore = new GameObject [size][size];
         emptyChar = appProperties.emptyChar;
         emptyColor = appProperties.emptyColor;
     }
@@ -48,11 +50,13 @@ public class Map {
 
             map.player = new Player(appProperties.playerChar, appProperties.playerColor,
                     map, map.goal);
+            map.player.addObstacle(map.wall);
             map.putMovableObject(map.player);
 
             for (int counter = 0; counter < enemiesCount; counter++) {
                 Enemy newEnemy = new Enemy(appProperties.enemyChar, appProperties.enemyColor, map, map.player, appProperties.isDevMode);
                 newEnemy.addObstacle(map.wall);
+                newEnemy.addObstacle(map.goal);
                 newEnemy.addObstacle(map.player);
                 map.player.addObstacle(newEnemy);
                 for (Enemy currentEnemy : map.enemies) {
@@ -73,7 +77,7 @@ public class Map {
 
 
     private void putMovableObject(MovableObject movableObject) {
-        int position = new Random().nextInt(this.infoStore.length * this.infoStore[0].length + 1 - this.objectsCounter);
+        int position = new Random().nextInt(this.infoStore.length * this.infoStore[0].length - this.objectsCounter);
         for (int outerCounter = 0; outerCounter < infoStore.length; ++outerCounter) {
             for (int innerCounter = 0; innerCounter < this.infoStore[0].length; ++innerCounter) {
                 if (this.infoStore[outerCounter][innerCounter] == null) {
@@ -107,23 +111,30 @@ public class Map {
         }
     }
 
-    public boolean Update() throws GameOverException {
-        Command.CLEAR_SCREEN();
-        return DevUpdate();
-    }
-
-    public boolean DevUpdate() throws GameOverException {
+    public void Update() throws GameOverException {
+        UpdateMovable(player);
         this.paintMap();
-        player.Update();
+        if(player.getPathfinder().isTarget()) {
+            throw new GameOverException("You won!");
+        }
         for (Enemy enemy: enemies) {
-            enemy.Update();
             try {
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+            if(UpdateMovable(enemy)) {
+                paintMap();
+            }
         }
-        return false;
+    }
+    private boolean UpdateMovable(MovableObject movableObject) throws GameOverException {
+        int xPosition = movableObject.xPosition;
+        int yPosition = movableObject.yPosition;
+        boolean result = movableObject.Update();
+        infoStore[yPosition][xPosition] = null;
+        infoStore[movableObject.yPosition][movableObject.xPosition] = movableObject;
+        return result;
     }
 
     public int getX_Size() {
@@ -134,7 +145,10 @@ public class Map {
         return infoStore.length;
     }
 
-    private void paintMap() {
+    public void paintMap() {
+        if (!applicationProperties.isDevMode) {
+            System.out.print(colorize(Command.CLEAR_SCREEN()));
+        }
         for (int y = 0; y < infoStore.length; ++y) {
             for (int x = 0; x < infoStore[0].length; ++x) {
                 if (infoStore[y][x] != null) {

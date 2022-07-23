@@ -3,7 +3,7 @@ package edu.school42;
 import com.diogonunes.jcolor.Attribute;
 
 public abstract class MovableObject extends GameObject {
-    private GamePathfinder pathfinder;
+    protected GamePathfinder pathfinder;
 
     public int xPosition;
     public int yPosition;
@@ -15,15 +15,11 @@ public abstract class MovableObject extends GameObject {
     public void addObstacle(GameObject obstacle) {
         pathfinder.addObstacle(obstacle);
     }
-    public abstract void Update() throws GameOverException;
+    public abstract boolean Update() throws GameOverException;
 
     public GamePathfinder getPathfinder() {
         pathfinder.xPosition = this.xPosition;
         pathfinder.yPosition = this.yPosition;
         return pathfinder;
-    }
-
-    public void MoveTo(int xPosition, int yPosition) {
-
     }
 }

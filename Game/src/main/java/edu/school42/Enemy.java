@@ -1,7 +1,6 @@
 package edu.school42;
 
 import com.diogonunes.jcolor.Attribute;
-
 import java.util.Scanner;
 
 public class Enemy extends MovableObject {
@@ -12,7 +11,7 @@ public class Enemy extends MovableObject {
     }
 
     @Override
-    public void Update() throws GameOverException {
+    public boolean Update() throws GameOverException {
         if (isDevMode) {
             Scanner console = new Scanner(System.in);
             while (true) {
@@ -22,5 +21,6 @@ public class Enemy extends MovableObject {
                 }
             }
         }
+        return false;
     }
 }
