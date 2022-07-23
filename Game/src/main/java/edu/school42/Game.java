@@ -31,6 +31,7 @@ public class Game {
                 map.Update();
             }
         } catch (GameOverException gameOverException) {
+            map.paintMap();
             System.out.println(gameOverException.toString());
         }
     }

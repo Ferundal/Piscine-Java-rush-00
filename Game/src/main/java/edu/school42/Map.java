@@ -95,7 +95,7 @@ public class Map {
         }
     }
     private void putAtRandomPosition(GameObject object) {
-        int position = new Random().nextInt(this.infoStore.length * this.infoStore[0].length + 1 - this.objectsCounter);
+        int position = new Random().nextInt(this.infoStore.length * this.infoStore[0].length - this.objectsCounter);
         for (int outerCounter = 0; outerCounter < infoStore.length; ++outerCounter) {
             for (int innerCounter = 0; innerCounter < this.infoStore[0].length; ++innerCounter) {
                 if (this.infoStore[outerCounter][innerCounter] == null) {
@@ -129,11 +129,18 @@ public class Map {
         }
     }
     private boolean UpdateMovable(MovableObject movableObject) throws GameOverException {
+        boolean isGameOver = false;
         int xPosition = movableObject.xPosition;
         int yPosition = movableObject.yPosition;
         boolean result = movableObject.Update();
         infoStore[yPosition][xPosition] = null;
+        if (movableObject.getPathfinder().isTarget()) {
+            isGameOver = true;
+        }
         infoStore[movableObject.yPosition][movableObject.xPosition] = movableObject;
+        if (isGameOver) {
+            throw new GameOverException("You won!");
+        }
         return result;
     }
 
