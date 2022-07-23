@@ -147,7 +147,7 @@ public class Map {
 
     public void paintMap() {
         if (!applicationProperties.isDevMode) {
-            System.out.print(colorize(Command.CLEAR_SCREEN()));
+            System.out.println(colorize(Command.CLEAR_SCREEN()));
         }
         for (int y = 0; y < infoStore.length; ++y) {
             for (int x = 0; x < infoStore[0].length; ++x) {
