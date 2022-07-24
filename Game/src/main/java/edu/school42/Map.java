@@ -117,11 +117,6 @@ public class Map {
         UpdateMovable(player);
         this.paintMap();
         for (Enemy enemy: enemies) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
             if(UpdateMovable(enemy)) {
                 paintMap();
             }
