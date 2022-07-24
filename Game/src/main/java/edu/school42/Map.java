@@ -65,9 +65,6 @@ public class Map {
                 map.enemies.add(newEnemy);
                 map.putMovableObject(newEnemy);
             }
-            if (appProperties.isDevMode) {
-                map.paintMap();
-            }
             pathToTarget = Path.newInstance(map.player.getPathfinder());
         } while (pathToTarget.getMoveDirection() == Direction.STAY);
         return (map);
@@ -117,7 +114,7 @@ public class Map {
         UpdateMovable(player);
         this.paintMap();
         for (Enemy enemy: enemies) {
-            if(UpdateMovable(enemy)) {
+            if(UpdateMovable(enemy) || applicationProperties.isDevMode) {
                 paintMap();
             }
         }
