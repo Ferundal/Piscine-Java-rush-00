@@ -132,13 +132,15 @@ public class Map {
         int xPosition = movableObject.xPosition;
         int yPosition = movableObject.yPosition;
         boolean result = movableObject.Update();
-        infoStore[yPosition][xPosition] = null;
-        if (movableObject.getPathfinder().isTarget()) {
-            isGameOver = true;
-        }
-        infoStore[movableObject.yPosition][movableObject.xPosition] = movableObject;
-        if (isGameOver) {
-            throw new GameOverException("You won!");
+        if (result) {
+            infoStore[yPosition][xPosition] = null;
+            if (movableObject.getPathfinder().isTarget()) {
+                isGameOver = true;
+            }
+            infoStore[movableObject.yPosition][movableObject.xPosition] = movableObject;
+            if (isGameOver) {
+                throw new GameOverException("You won!");
+            }
         }
         return result;
     }

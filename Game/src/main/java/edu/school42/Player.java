@@ -10,11 +10,16 @@ public class Player extends MovableObject {
     }
     @Override
     public boolean Update() throws GameOverException {
-        Path path = Path.newInstance(this.getPathfinder());
-        if (path.getMoveDirection() == Direction.STAY) {
+        boolean isGameOver = true;
+        if (this.getPathfinder().move(Direction.UP) ||
+                this.getPathfinder().move(Direction.DOWN) ||
+                this.getPathfinder().move(Direction.RIGHT) ||
+                this.getPathfinder().move(Direction.LEFT)) {
+            isGameOver = false;
+        }
+        if (isGameOver) {
             throw new GameOverException("You lose");
         }
-        this.getPathfinder();
         Scanner console = new Scanner(System.in);
         while (true) {
             String nextLine = console.nextLine();
