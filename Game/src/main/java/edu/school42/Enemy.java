@@ -21,6 +21,39 @@ public class Enemy extends MovableObject {
                 }
             }
         }
-        return false;
+        Path path = Path.newInstance(this.getPathfinder());
+        Direction moveDirection = path.getMoveDirection();
+        switch (moveDirection) {
+            case UP:
+                --this.yPosition;
+                if (this.getPathfinder().isTarget()) {
+                    ++this.yPosition;
+                    return false;
+                }
+                break;
+            case DOWN:
+                ++this.yPosition;
+                if (this.getPathfinder().isTarget()) {
+                    --this.yPosition;
+                    return false;
+                }
+                break;
+            case LEFT:
+                --this.xPosition;
+                if (this.getPathfinder().isTarget()) {
+                    return false;
+                }
+                break;
+            case RIGHT:
+                ++this.xPosition;
+                if (this.getPathfinder().isTarget()) {
+                    --this.xPosition;
+                    return false;
+                }
+                break;
+            case STAY:
+                return false;
+        }
+        return true;
     }
 }

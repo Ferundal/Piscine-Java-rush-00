@@ -7,127 +7,119 @@ public class Cell {
 
     private int horisonalPosition;
     private int verticalPosition;
-    private static ArrayList<Cell> exploredCells;
-    Pathfinder pathfinder;
-    static {
-        exploredCells = new ArrayList<Cell>();
-    }
-    private Cell (int horisonalPosition, int verticalPosition, Pathfinder pathfinder) {
+    private ArrayList<Cell> exploredCells;
+    private ArrayList<Cell> connectedCells = null;
+    private LinkedList<Direction> path = null;
+    private Pathfinder pathfinder;
+
+    private Direction expandDirection;
+
+    private int generation;
+
+    private Cell (Cell parentCell,
+                  int horisonalPosition,
+                  int verticalPosition,
+                  Direction expandDirection) {
+        this.generation = ++parentCell.generation;
         this.horisonalPosition = horisonalPosition;
         this.verticalPosition = verticalPosition;
-        this.pathfinder = pathfinder;
+        this.pathfinder = parentCell.pathfinder;
+        this.exploredCells = parentCell.exploredCells;
+        this.exploredCells.add(this);
+        this.expandDirection = expandDirection;
     }
     public Cell (Pathfinder pathfinder) {
+        this.generation = 0;
         horisonalPosition = 0;
         verticalPosition = 0;
+        this.pathfinder = pathfinder;
+        this.exploredCells = new ArrayList<Cell>();
+        this.exploredCells.add(this);
+        this.expandDirection = Direction.STAY;
     }
-    public Cell exploreUp() {
-        if (!isCellExist(this.horisonalPosition, this.verticalPosition + 1)
-                && pathfinder.moveUp()) {
-            return new Cell(this.horisonalPosition, this.verticalPosition + 1, this.pathfinder);
+
+
+
+    public boolean expandWave() {
+        boolean isExpandSucceed = false;
+        if (connectedCells == null) {
+            connectedCells = new ArrayList<Cell>(4);
+            if (exploreDirection(Direction.UP)) {
+                isExpandSucceed = true;
+            }
+            if (exploreDirection(Direction.DOWN)) {
+                isExpandSucceed = true;
+            }
+            if (exploreDirection(Direction.LEFT)) {
+                isExpandSucceed = true;
+            }
+            if (exploreDirection(Direction.RIGHT)) {
+                isExpandSucceed = true;
+            }
+        } else {
+            for (Cell connectedCell: connectedCells) {
+                pathfinder.move(connectedCell.expandDirection);
+                if (connectedCell.expandWave()) {
+                    isExpandSucceed = true;
+                }
+                pathfinder.move(connectedCell.expandDirection.getOppositeDirection());
+            }
         }
-        return null;
-    }
-    public Cell exploreDown() {
-        if (!isCellExist(this.horisonalPosition, this.verticalPosition + 1)
-                && pathfinder.moveDown()) {
-            return new Cell(this.horisonalPosition, this.verticalPosition + 1, this.pathfinder);
+        for (Cell connectedCell: connectedCells) {
+            if (connectedCell.path != null) {
+                this.path = connectedCell.path;
+                this.path.addFirst(connectedCell.expandDirection);
+            }
         }
-        return null;
+        return isExpandSucceed;
     }
-    public Cell exploreRight() {
-        if (!isCellExist(this.horisonalPosition, this.verticalPosition + 1)
-                && pathfinder.moveRight()) {
-            return new Cell(this.horisonalPosition, this.verticalPosition + 1, this.pathfinder);
+
+    public boolean exploreDirection(Direction direction) {
+        int cellX_Position = this.horisonalPosition;
+        int cellY_Position = this.verticalPosition;
+        switch (direction) {
+            case UP:
+                --cellY_Position;
+                break;
+            case DOWN:
+                ++cellY_Position;
+                break;
+            case LEFT:
+                --cellX_Position;
+                break;
+            case RIGHT:
+                ++cellX_Position;
+                break;
         }
-        return null;
-    }
-    public Cell exploreLeft() {
-        if (!isCellExist(this.horisonalPosition, this.verticalPosition + 1)
-                && pathfinder.moveLeft()) {
-            return new Cell(this.horisonalPosition, this.verticalPosition + 1, this.pathfinder);
+        if (!isCellExist(cellX_Position, cellY_Position) && pathfinder.move(direction)) {
+            this.connectedCells.add(new Cell(this,
+                    cellX_Position,
+                    cellY_Position,
+                    direction));
+            if (pathfinder.isTarget()) {
+                this.path = new LinkedList<>();
+                path.addFirst(direction);
+            }
+            pathfinder.move(direction.getOppositeDirection());
+            return true;
         }
-        return null;
+        return false;
     }
-    public static boolean isCellExist(int xPosition, int yPosition) {
-        for (int counter = 0; counter < exploredCells.size(); ++counter) {
-            if (exploredCells.get(counter).horisonalPosition == xPosition
-                    && exploredCells.get(counter).verticalPosition == yPosition) {
+
+
+
+    public boolean isCellExist(int xPosition, int yPosition) {
+        for (Cell exploredCell : exploredCells) {
+            if (exploredCell.horisonalPosition == xPosition
+                    && exploredCell.verticalPosition == yPosition) {
                 return true;
             }
         }
         return false;
     }
-    public LinkedList<Cell> findLinePathToOtherCell(Cell cell) {
-        LinkedList<Cell> resultPath = new LinkedList<Cell>();
-        if (this.horisonalPosition == cell.horisonalPosition) {
-            int verticalDifference = cell.verticalPosition - this.verticalPosition;
-            if (verticalDifference > 1) {
-                while (pathfinder.moveUp() && verticalDifference > 1) {
-                    resultPath.add(new Cell(cell.horisonalPosition,
-                            cell.verticalPosition - (verticalDifference - 1),
-                            this.pathfinder));
-                    --verticalDifference;
-                }
-                for (int counter = 0; counter < resultPath.size(); ++counter) {
-                    pathfinder.moveDown();
-                }
-                if (verticalDifference == 1) {
-                    return resultPath;
-                }
-            } else if (verticalDifference < -1) {
-                while (pathfinder.moveDown() && verticalDifference < -1) {
-                    resultPath.add(new Cell(cell.horisonalPosition,
-                            cell.verticalPosition - (verticalDifference + 1),
-                            this.pathfinder));
-                    ++verticalDifference;
-                }
-                for (int counter = 0; counter < resultPath.size(); ++counter) {
-                    pathfinder.moveUp();
-                }
-                if (verticalDifference == -1) {
-                    return resultPath;
-                }
-            }
-        } else if (this.verticalPosition == cell.verticalPosition) {
-            int horisontalDifference = cell.horisonalPosition - this.horisonalPosition;
-            if (horisontalDifference > 1) {
-                while (pathfinder.moveRight() && horisontalDifference > 1) {
-                    resultPath.add(new Cell(cell.verticalPosition,
-                            cell.horisonalPosition - (horisontalDifference - 1),
-                            this.pathfinder));
-                    --horisontalDifference;
-                }
-                for (int counter = 0; counter < resultPath.size(); ++counter) {
-                    pathfinder.moveLeft();
-                }
-                if (horisontalDifference == 1) {
-                    return resultPath;
-                }
-            } else if (horisontalDifference < -1) {
-                while (pathfinder.moveLeft() && horisontalDifference < -1) {
-                    resultPath.add(new Cell(cell.horisonalPosition,
-                            cell.verticalPosition - (horisontalDifference + 1),
-                            this.pathfinder));
-                    ++horisontalDifference;
-                }
-                for (int counter = 0; counter < resultPath.size(); ++counter) {
-                    pathfinder.moveRight();
-                }
-                if (horisontalDifference == -1) {
-                    return resultPath;
-                }
-            }
-        }
-        return null;
-    }
 
-    boolean isOnSameHorizontalLine(Cell cell) {
-        return this.horisonalPosition == cell.horisonalPosition;
+    public LinkedList<Direction> getPath() {
+        return path;
     }
-    boolean isOnSameVerticalLine(Cell cell) {
-        return this.verticalPosition == cell.verticalPosition;
-    }
-
 }
 

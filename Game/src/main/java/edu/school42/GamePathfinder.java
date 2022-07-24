@@ -29,6 +29,21 @@ public class GamePathfinder implements Pathfinder {
     }
 
     @Override
+    public boolean move(Direction direction) {
+        switch (direction) {
+            case UP:
+                return moveUp();
+            case DOWN:
+                return moveDown();
+            case RIGHT:
+                return moveRight();
+            case LEFT:
+                return moveLeft();
+        }
+        return true;
+    }
+
+    @Override
     public boolean moveUp() {
         if (this.yPosition == 0) {
             return false;

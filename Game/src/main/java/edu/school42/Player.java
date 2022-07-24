@@ -14,6 +14,7 @@ public class Player extends MovableObject {
         if (path.getMoveDirection() == Direction.STAY) {
             throw new GameOverException("You lose");
         }
+        this.getPathfinder();
         Scanner console = new Scanner(System.in);
         while (true) {
             String nextLine = console.nextLine();
@@ -23,7 +24,7 @@ public class Player extends MovableObject {
             }
         }
 
-    private boolean Move(char moveDirection) {
+    private boolean Move(char moveDirection) throws GameOverException {
         switch (moveDirection) {
             case 'w':
                 if (this.getPathfinder().moveUp()) {
@@ -49,6 +50,8 @@ public class Player extends MovableObject {
                     return true;
                 }
                 break;
+            case '9':
+                throw new GameOverException("You concede defeat");
         }
         return false;
     }

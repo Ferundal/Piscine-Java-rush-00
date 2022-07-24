@@ -57,7 +57,6 @@ public class Map {
                 Enemy newEnemy = new Enemy(appProperties.enemyChar, appProperties.enemyColor, map, map.player, appProperties.isDevMode);
                 newEnemy.addObstacle(map.wall);
                 newEnemy.addObstacle(map.goal);
-                newEnemy.addObstacle(map.player);
                 map.player.addObstacle(newEnemy);
                 for (Enemy currentEnemy : map.enemies) {
                     newEnemy.addObstacle(currentEnemy);
@@ -65,6 +64,9 @@ public class Map {
                 }
                 map.enemies.add(newEnemy);
                 map.putMovableObject(newEnemy);
+            }
+            if (appProperties.isDevMode) {
+                map.paintMap();
             }
             pathToTarget = Path.newInstance(map.player.getPathfinder());
         } while (pathToTarget.getMoveDirection() == Direction.STAY);
@@ -114,9 +116,6 @@ public class Map {
     public void Update() throws GameOverException {
         UpdateMovable(player);
         this.paintMap();
-        if(player.getPathfinder().isTarget()) {
-            throw new GameOverException("You won!");
-        }
         for (Enemy enemy: enemies) {
             try {
                 Thread.sleep(100);
